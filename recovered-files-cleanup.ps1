@@ -1,5 +1,5 @@
 # Folder path to scan
-$folder = "<your-file-path-here>"
+$folder = "<C:\your\folder\path\here>"
 $logFile = Join-Path $folder "deleted_corrupted.txt"
 
 # Clear old log
@@ -63,7 +63,9 @@ function Test-Binary($filePath) {
 
 # ----- Auto-detect known file types using Windows registry -----
 # This will enumerate all registered file extensions on the system
-$extensions = Get-ChildItem "HKCR:\." | ForEach-Object { $_.PSChildName } | Where-Object { $_ -ne "" }
+$extensions = Get-ChildItem "Registry::HKEY_CLASSES_ROOT" | Where-Object { $_.PSChildName -match '^\.' } | ForEach-Object { $_.PSChildName }
+
+
 
 # Map known extensions to checker functions
 $checkers = @{}
@@ -101,4 +103,3 @@ $files | ForEach-Object -Parallel {
 } -ThrottleLimit 10 -ArgumentList $checkers, $logFile
 
 Write-Host "Scan complete! Corrupted files logged to $logFile"
-
