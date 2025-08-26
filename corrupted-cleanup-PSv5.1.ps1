@@ -7,7 +7,16 @@
 # ==========================================================
 
 # Folder to scan
-$folder = "<C:\path\to\your\folder>"  # <-- Change this to your target folder
+#$folder = "<C:\path\to\your\folder>"  # <-- Change this to your target folder
+# Folder to scan (auto-detect the folder where this script is located)
+
+####################################
+#put this file in the folder you want to scan. then go to that folder in powershell, and run the file .\corrupted-cleanup-PSv5.1.ps1
+#it will start scanning in that folder and then recursive to subfolders, looking for corrupted files and delete them
+####################################
+
+$folder = $PSScriptRoot  # <-- This ensures the script runs in its own folder
+
 
 # Log file
 $logFile = Join-Path $folder ("deleted_corrupted_" + (Get-Date -Format "yyyyMMdd_HHmmss") + ".txt")
