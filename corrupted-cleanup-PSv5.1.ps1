@@ -7,7 +7,7 @@
 # ==========================================================
 
 # Folder to scan
-$folder = "G:\dell-recovery\Unknown folder"  # <-- Change this to your target folder
+$folder = "<C:\path\to\your\folder>"  # <-- Change this to your target folder
 
 # Log file
 $logFile = Join-Path $folder ("deleted_corrupted_" + (Get-Date -Format "yyyyMMdd_HHmmss") + ".txt")
