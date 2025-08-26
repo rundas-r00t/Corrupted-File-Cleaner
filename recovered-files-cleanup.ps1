@@ -1,5 +1,5 @@
 # Folder path to scan
-$folder = "G:\dell-recovery\files"
+$folder = "<your-file-path-here>"
 $logFile = Join-Path $folder "deleted_corrupted.txt"
 
 # Clear old log
@@ -101,3 +101,4 @@ $files | ForEach-Object -Parallel {
 } -ThrottleLimit 10 -ArgumentList $checkers, $logFile
 
 Write-Host "Scan complete! Corrupted files logged to $logFile"
+
