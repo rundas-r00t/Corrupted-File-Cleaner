@@ -1,4 +1,4 @@
-$folder = "G:\dell-recovery\jpgs"
+$folder = "<your-file-path-here>"
 $logFile = Join-Path $folder "deleted_jpgs.txt"
 
 # Clear old log if it exists
@@ -20,3 +20,4 @@ Get-ChildItem -Path $folder -Filter *.jpg | ForEach-Object {
         Write-Host "Deleted corrupted file: $($_.FullName)"
     }
 }
+
