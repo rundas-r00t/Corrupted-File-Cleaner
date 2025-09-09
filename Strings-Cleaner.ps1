@@ -1,35 +1,48 @@
 ### this will hopefully take the strings.txt file from the strings-scanner.ps1 script and take out any non-printable characters and other garbage data, and give us a clean email list
 
-# Input and output
-$InputFile = "c:\strings.txt"
+# Input and output files
+$InputFile  = "c:\strings.txt"
 $OutputFile = "c:\strings_clean.txt"
 
-# Clear output if exists
-if (Test-Path $OutputFile) { Clear-Content $OutputFile }
+# Delete old output if it exists
+if (Test-Path $OutputFile) { Remove-Item $OutputFile }
 
-# Regex to match:
-# 1. email only: something@something.something
-# 2. email:password (allow anything after colon)
-$EmailPattern = '^[\w\.-]+@[\w\.-]+\.\w+(:.*)?$'
+$reader = [System.IO.StreamReader]::new($InputFile, [System.Text.Encoding]::UTF8)
+$writer = [System.IO.StreamWriter]::new($OutputFile, $false, [System.Text.Encoding]::UTF8)
 
-# Buffer settings
-$BufferSize = 50000
-$Buffer = New-Object System.Collections.Generic.List[string]
+$lineCount = 0
+$flushInterval = 100000
 
-# Stream the file line by line
-$reader = [System.IO.StreamReader]::new($InputFile)
-while (($line = $reader.ReadLine()) -ne $null) {
-    if ($line -match $EmailPattern) {
-        $Buffer.Add($line)
-        if ($Buffer.Count -ge $BufferSize) {
-            [System.IO.File]::AppendAllLines($OutputFile, $Buffer)
-            $Buffer.Clear()
+try {
+    while (($line = $reader.ReadLine()) -ne $null) {
+        # Trim once
+        $line = $line.Trim()
+
+        # Replace semicolons with colons
+        if ($line.Contains(';')) {
+            $line = $line.Replace(';', ':')
+        }
+
+        # Remove spaces (faster than regex)
+        if ($line.Contains(' ')) {
+            $line = $line.Replace(' ', '')
+        }
+
+        # Keep only if contains '@'
+        if ($line.Contains('@')) {
+            $writer.WriteLine($line)
+        }
+
+        $lineCount++
+
+        # Flush every 100k lines
+        if ($lineCount % $flushInterval -eq 0) {
+            $writer.Flush()
         }
     }
 }
-$reader.Close()
-
-# Final flush
-if ($Buffer.Count -gt 0) {
-    [System.IO.File]::AppendAllLines($OutputFile, $Buffer)
+finally {
+    $writer.Flush()
+    $writer.Dispose()
+    $reader.Dispose()
 }
